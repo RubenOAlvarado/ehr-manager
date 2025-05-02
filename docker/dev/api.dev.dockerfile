@@ -18,7 +18,7 @@ COPY . .
 # Env variables for development
 ENV NODE_ENV=development
 ENV PORT=4000
-ENV DATABASE_URL=postgresql://postgres:postgres@localhost:5433/ehr_manager?schema=public
+ENV DATABASE_URL=postgres://prisma.ulabijgcrhzqudgtkqvp:xif17BzKKDJRAI8H@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x
 
 # Expose the port
 EXPOSE 4000

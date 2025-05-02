@@ -22,36 +22,13 @@ services:
     ports:
       - "4000:4000"
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/ehr_manager?schema=public"
+      DATABASE_URL: "postgres://prisma.ulabijgcrhzqudgtkqvp:xif17BzKKDJRAI8H@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x"
       NODE_ENV: development
     depends_on:
       db:
         condition: service_healthy
     networks:
       - app-network
-
-  db:
-    container_name: db
-    image: postgres:latest
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ehr_manager
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      ["5432:5432"]
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-volumes:
-  pgdata:
 
 networks:
   app-network:
