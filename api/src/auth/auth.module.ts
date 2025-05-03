@@ -7,7 +7,7 @@ import { JwtAuthGuard } from './guards/jwt.auth.guard';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ defaultStrategy: 'supabase' }),
     ConfigModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {

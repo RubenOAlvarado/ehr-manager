@@ -1,8 +1,10 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
+import { Public } from './shared/decorators/public.decorator';
 
 @Controller()
 export class AppController {
+  @Public()
   @Get()
   getHello(): string {
     return 'Hello World';
