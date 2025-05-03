@@ -7,6 +7,7 @@ import { EhrIntegrationsModule } from './ehr-integrations/ehr-integrations.modul
 import { BaseQuestionsModule } from './base-questions/base-questions.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -21,5 +22,6 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true,
     }),
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

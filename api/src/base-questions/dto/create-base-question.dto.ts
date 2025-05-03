@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsAlphanumeric, IsEnum, IsNotEmpty } from 'class-validator';
-import { QuestionType, ResponseDataType } from 'generated/prisma';
+import { QuestionType, ResponseDataType } from '@prisma/client';
 
 export class CreateBaseQuestionDto {
   @ApiProperty({

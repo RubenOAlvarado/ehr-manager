@@ -11,7 +11,7 @@ async function bootstrap() {
   app.setGlobalPrefix(API_BASE_PATH);
   await buildSwaggerModule(app);
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 
 bootstrap().catch((error) => {
