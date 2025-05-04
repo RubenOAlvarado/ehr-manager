@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -12,6 +13,7 @@ import {
 } from '@nestjs/swagger';
 import { ResponseClientDto } from './dto/response-client.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
 
 @ApiTags('Clients')
 @Controller('clients')
@@ -25,6 +27,8 @@ export class ClientsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiBody({ type: CreateClientDto, description: 'The client to create.' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post()
   create(@Body() createClientDto: CreateClientDto) {
     return this.clientsService.create(createClientDto);

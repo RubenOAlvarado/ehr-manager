@@ -20,6 +20,7 @@ export class ClientsService {
     return this.prisma.client.findMany({
       where: {
         deletedAt: null,
+        isActive: true,
       },
     });
   }

@@ -1,6 +1,7 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/guards/jwt.auth.guard';
 import { Public } from './shared/decorators/public.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -12,6 +13,7 @@ export class AppController {
 
   @Get('/protected')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   protected(@Req() req) {
     return {
       message: 'AuthGuard works 🎉',

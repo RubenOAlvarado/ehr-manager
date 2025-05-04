@@ -1,8 +1,9 @@
-import { Controller, Post, Body, Param } from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { QuestionSetsService } from './question-sets.service';
 import { CreateQuestionSetDto } from './dto/create-question-set.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -11,7 +12,9 @@ import {
 } from '@nestjs/swagger';
 import { ResponseQuestionSetDto } from './dto/response-question-set.dto';
 import { ClientIdParamDto } from 'src/shared/params/client-id.param.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
 
+@ApiBearerAuth()
 @ApiTags('Questions sets')
 @Controller('clients/:clientId/question-sets')
 export class QuestionSetsController {
@@ -28,6 +31,7 @@ export class QuestionSetsController {
     type: CreateQuestionSetDto,
     description: 'The question set data.',
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(
     @Body() createQuestionSetDto: CreateQuestionSetDto,

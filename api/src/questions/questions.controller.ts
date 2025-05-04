@@ -1,8 +1,17 @@
-import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -14,6 +23,7 @@ import { ResponseQuestionDto } from './dto/response-question.dto';
 import { Public } from 'src/shared/decorators/public.decorator';
 import { GetQuestionsParamsDto } from './dto/getQuestions.params.dto';
 import { QuestionSetIdQueryDto } from './dto/questionSetId.query.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
 
 @ApiTags('Questions')
 @Controller('questions')
@@ -28,6 +38,8 @@ export class QuestionsController {
   @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   @ApiBadRequestResponse({ description: 'Invalid input' })
   @ApiBody({ type: CreateQuestionDto, description: 'Question details' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post()
   create(@Body() createQuestionDto: CreateQuestionDto) {
     return this.questionsService.create(createQuestionDto);

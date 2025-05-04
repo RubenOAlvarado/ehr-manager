@@ -1,7 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { BaseQuestionsService } from './base-questions.service';
 import { CreateBaseQuestionDto } from './dto/create-base-question.dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -9,7 +10,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseBaseQuestionsDto } from './dto/response-base-questions.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
 
+@ApiBearerAuth()
 @ApiTags('Base Questions')
 @Controller('base-questions')
 export class BaseQuestionsController {
@@ -22,6 +25,7 @@ export class BaseQuestionsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error' })
   @ApiBody({ type: CreateBaseQuestionDto, description: 'Base question data' })
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createBaseQuestionDto: CreateBaseQuestionDto) {
     return this.baseQuestionsService.create(createBaseQuestionDto);
