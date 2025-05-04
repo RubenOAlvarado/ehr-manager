@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { QuestionSetsService } from './question-sets.service';
 import { CreateQuestionSetDto } from './dto/create-question-set.dto';
 import {
@@ -10,9 +10,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseQuestionSetDto } from './dto/response-question-set.dto';
+import { ClientIdParamDto } from 'src/shared/params/client-id.param.dto';
 
 @ApiTags('Questions sets')
-@Controller('question-sets')
+@Controller('clients/:clientId/question-sets')
 export class QuestionSetsController {
   constructor(private readonly questionSetsService: QuestionSetsService) {}
 
@@ -28,7 +29,10 @@ export class QuestionSetsController {
     description: 'The question set data.',
   })
   @Post()
-  create(@Body() createQuestionSetDto: CreateQuestionSetDto) {
-    return this.questionSetsService.create(createQuestionSetDto);
+  create(
+    @Body() createQuestionSetDto: CreateQuestionSetDto,
+    @Param() param: ClientIdParamDto,
+  ) {
+    return this.questionSetsService.create(createQuestionSetDto, param);
   }
 }

@@ -1,38 +1,35 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateQuestionSetDto } from './dto/create-question-set.dto';
+import { CreatePatientDto } from './dto/create-patient.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ClientsService } from 'src/clients/clients.service';
-import { ClientIdParamDto } from 'src/shared/params/client-id.param.dto';
+import { ClientIdParamDto } from '../shared/params/client-id.param.dto';
 
 @Injectable()
-export class QuestionSetsService {
+export class PatientsService {
   constructor(
     private prisma: PrismaService,
     private clientsService: ClientsService,
   ) {}
 
   async create(
-    createQuestionSetDto: CreateQuestionSetDto,
+    createPatientDto: CreatePatientDto,
     { clientId }: ClientIdParamDto,
   ) {
-    const validClient = await this.clientsService.findOne(clientId);
-    if (!validClient) {
+    const client = await this.clientsService.findOne(clientId);
+    if (!client) {
       throw new BadRequestException('Invalid clientId');
     }
-
-    return this.prisma.questionSet.create({
+    return this.prisma.patient.create({
       data: {
-        ...createQuestionSetDto,
+        ...createPatientDto,
         clientId,
-        version: 1,
         isActive: true,
       },
-      include: { client: true },
     });
   }
 
   async findOne(id: string) {
-    return this.prisma.questionSet.findUnique({
+    return this.prisma.patient.findUnique({
       where: { id },
     });
   }

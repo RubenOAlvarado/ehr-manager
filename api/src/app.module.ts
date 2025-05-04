@@ -8,6 +8,8 @@ import { BaseQuestionsModule } from './base-questions/base-questions.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
+import { PatientsModule } from './patients/patients.module';
+import { PatientsResponsesModule } from './patients-responses/patients-responses.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { AppController } from './app.controller';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    PatientsModule,
+    PatientsResponsesModule,
   ],
   controllers: [AppController],
 })

@@ -6,10 +6,12 @@ import {
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseClientDto } from './dto/response-client.dto';
+import { Public } from 'src/shared/decorators/public.decorator';
 
 @ApiTags('Clients')
 @Controller('clients')
@@ -29,12 +31,14 @@ export class ClientsController {
   }
 
   @ApiOperation({ summary: 'Get all clients' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     description: 'The clients have been successfully retrieved.',
     type: ResponseClientDto,
+    isArray: true,
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiNotFoundResponse({ description: 'No clients found.' })
+  @Public()
   @Get()
   findAll() {
     return this.clientsService.findAll();
