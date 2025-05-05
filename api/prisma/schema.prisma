@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
@@ -89,8 +89,8 @@ model EhrProvider {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   ehrMappings      EhrMapping[]
-  syncLogs         EhrSyncLog[]
   EhrMappingsCache EhrMappingsCache[]
+  clients          ClientEhrProvider[]
 
   @@map("ehr_providers")
 }
@@ -100,7 +100,6 @@ model Client {
   id              String    @id @default(uuid())
   name            String
   externalId      String?   @map("external_id")
-  preferredEhr    String    @map("preferred_ehr")
   defaultLanguage String    @map("default_language")
   metadata        Json      @default("{}")
   isActive        Boolean   @default(true) @map("is_active")
@@ -111,11 +110,30 @@ model Client {
   questionSets     QuestionSet[]
   patients         Patient[]
   bulkOperations   BulkOperation[]
-  EhrSyncLog       EhrSyncLog[]
   EhrMappingsCache EhrMappingsCache[]
+  ehrProviders     ClientEhrProvider[]
 
-  @@index([preferredEhr], name: "idx_client_ehr")
   @@map("clients")
+}
+
+model ClientEhrProvider {
+  id              String   @id @default(uuid())
+  clientId        String   @map("client_id")
+  ehrProviderCode String   @map("ehr_provider_code")
+  isDefault       Boolean  @default(false) @map("is_default")
+  credentials     Json?    @default("{}") @map("credentials")
+  settings        Json?    @default("{}") @map("settings")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  client      Client       @relation(fields: [clientId], references: [id])
+  ehrProvider EhrProvider  @relation(fields: [ehrProviderCode], references: [code])
+  syncLogs    EhrSyncLog[]
+
+  @@unique([clientId, ehrProviderCode])
+  @@index([clientId])
+  @@index([ehrProviderCode])
+  @@map("client_ehr_providers")
 }
 
 // QUESTIONNAIRE SYSTEM
@@ -242,22 +260,20 @@ model PatientResponse {
 
 // OPERATIONAL TABLES
 model EhrSyncLog {
-  id              String     @id @default(uuid())
-  patientId       String     @map("patient_id")
-  clientId        String     @map("client_id")
-  ehrProviderCode String     @map("ehr_provider_code")
-  syncStatus      SyncStatus @map("sync_status")
-  requestPayload  Json?      @map("request_payload")
-  responsePayload Json?      @map("response_payload")
-  errorDetails    Json?      @map("error_details")
-  retryCount      Int        @default(0) @map("retry_count")
-  nextRetryAt     DateTime?  @map("next_retry_at")
-  createdAt       DateTime   @default(now()) @map("created_at")
-  updatedAt       DateTime   @updatedAt @map("updated_at")
+  id                  String     @id @default(uuid())
+  patientId           String     @map("patient_id")
+  clientEhrProviderId String     @map("client_ehr_provider_id")
+  syncStatus          SyncStatus @map("sync_status")
+  requestPayload      Json?      @map("request_payload")
+  responsePayload     Json?      @map("response_payload")
+  errorDetails        Json?      @map("error_details")
+  retryCount          Int        @default(0) @map("retry_count")
+  nextRetryAt         DateTime?  @map("next_retry_at")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
 
-  patient     Patient     @relation(fields: [patientId], references: [id])
-  client      Client      @relation(fields: [clientId], references: [id])
-  ehrProvider EhrProvider @relation(fields: [ehrProviderCode], references: [code])
+  patient           Patient           @relation(fields: [patientId], references: [id])
+  clientEhrProvider ClientEhrProvider @relation(fields: [clientEhrProviderId], references: [id])
 
   @@index([patientId], name: "idx_ehr_sync_logs_patient")
   @@index([syncStatus], name: "idx_ehr_sync_logs_status")
@@ -267,18 +283,18 @@ model EhrSyncLog {
 }
 
 model BulkOperation {
-  id             String         @id @default(uuid())
-  clientId       String         @map("client_id")
-  operationType  OperationType  @map("operation_type")
-  status         SyncStatus     @default(PENDING)
-  parameters     Json           @default("{}") @map("parameters")
-  createdBy      String?        @map("created_by")
-  processedCount Int            @default(0) @map("processed_count")
-  totalCount     Int            @default(0) @map("total_count")
-  errorLog       String?        @map("error_log")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
-  completedAt    DateTime?      @map("completed_at")
+  id             String        @id @default(uuid())
+  clientId       String        @map("client_id")
+  operationType  OperationType @map("operation_type")
+  status         SyncStatus    @default(PENDING)
+  parameters     Json          @default("{}") @map("parameters")
+  createdBy      String?       @map("created_by")
+  processedCount Int           @default(0) @map("processed_count")
+  totalCount     Int           @default(0) @map("total_count")
+  errorLog       String?       @map("error_log")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  completedAt    DateTime?     @map("completed_at")
 
   client Client @relation(fields: [clientId], references: [id])
 

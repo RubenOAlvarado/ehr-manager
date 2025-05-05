@@ -13,6 +13,7 @@ import { seedBulkOperations } from './seeds/bulkOperations.seed';
 import { seedAuditLogs } from './seeds/auditLogs.seed';
 import { seedEhrMappingsCache } from './seeds/ehrMappingsCache.seed';
 import { seedQuestions } from './seeds/questions.seed';
+import { seedClientEhrProviders } from './seeds/clientEhrProviders.seed';
 
 const prisma = new PrismaClient();
 
@@ -26,6 +27,7 @@ async function main() {
   await seedQuestionSets(prisma, clientsIds);
   const patientIds = await seedPatients(prisma, clientsIds);
   await seedPatientResponses(prisma, patientIds);
+  await seedClientEhrProviders(prisma, clientsIds);
   await seedEhrSyncLogs(prisma, patientIds);
   await seedBulkOperations(prisma, clientsIds);
   await seedAuditLogs(prisma);

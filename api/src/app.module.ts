@@ -11,6 +11,8 @@ import { AppController } from './app.controller';
 import { PatientsModule } from './patients/patients.module';
 import { PatientsResponsesModule } from './patients-responses/patients-responses.module';
 import { LanguagesModule } from './languages/languages.module';
+import { EhrProvidersModule } from './ehr-providers/ehr-providers.module';
+import { ClientEhrProviderModule } from './client-ehr-provider/client-ehr-provider.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { LanguagesModule } from './languages/languages.module';
     PatientsModule,
     PatientsResponsesModule,
     LanguagesModule,
+    EhrProvidersModule,
+    ClientEhrProviderModule,
   ],
   controllers: [AppController],
 })

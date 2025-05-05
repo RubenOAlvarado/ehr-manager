@@ -1,0 +1,45 @@
+import axios from 'axios';
+import { Client } from '../../types/Clients';
+import supabase from '../supabase/supabaseClients';
+
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const API_VERSION = import.meta.env.VITE_API_VERSION || 'v1';
+
+const api = axios.create({
+    baseURL: `${BASE_URL}/${API_VERSION}`,
+    headers: { 'Content-Type': 'application/json' },
+});
+
+api.interceptors.request.use(
+    async (config) => {
+        const session = await supabase.auth.getSession();
+        const token = session?.data.session?.access_token;
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+export const createClients = (data: Client) => {
+    try {
+        const response = api.post('/clients', data);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchClients = () => {
+    try {
+        const response = api.get('/clients');
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

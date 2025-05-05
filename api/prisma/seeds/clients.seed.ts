@@ -9,7 +9,6 @@ export async function seedClients(prisma: PrismaClient) {
     {
       name: 'General Hospital',
       externalId: 'GH001',
-      preferredEhr: 'ATHENA',
       defaultLanguage: 'en',
       metadata: {
         address: '123 Medical Center Blvd, Springfield, IL',
@@ -21,7 +20,6 @@ export async function seedClients(prisma: PrismaClient) {
     {
       name: 'City Medical Center',
       externalId: 'CMC002',
-      preferredEhr: 'ALLSCRIPTS',
       defaultLanguage: 'en',
       metadata: {
         address: '456 Healthcare Ave, Metropolis, NY',
@@ -33,7 +31,6 @@ export async function seedClients(prisma: PrismaClient) {
     {
       name: 'Sunshine Pediatrics',
       externalId: 'SP003',
-      preferredEhr: 'EPIC',
       defaultLanguage: 'es',
       metadata: {
         address: '789 Children Way, Miami, FL',
