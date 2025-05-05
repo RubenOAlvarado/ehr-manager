@@ -12,18 +12,19 @@ export class PatientsResponsesService {
     private baseQuestionsService: BaseQuestionsService,
   ) {}
 
-  async create(createPatientsResponseDto: CreatePatientsResponseDto) {
-    const [validPatientId, validBaseQuestionId] = await Promise.all([
-      this.validatePatientId(createPatientsResponseDto.patientId),
-      this.validateBaseQuestionId(createPatientsResponseDto.baseQuestionId),
-    ]);
-    if (validBaseQuestionId && validPatientId) {
-      return this.prisma.patientResponse.create({
-        data: {
-          ...createPatientsResponseDto,
-        },
-      });
+  async create(createPatientsResponseDto: CreatePatientsResponseDto[]) {
+    if (createPatientsResponseDto.length === 0) {
+      throw new BadRequestException('No responses provided');
     }
+    await this.validatePatientId(createPatientsResponseDto[0].patientId);
+    await Promise.all(
+      createPatientsResponseDto.map(async (response) => {
+        await this.validateBaseQuestionId(response.baseQuestionId);
+      }),
+    );
+    return this.prisma.patientResponse.createMany({
+      data: createPatientsResponseDto,
+    });
   }
 
   private async validatePatientId(patientId: string) {

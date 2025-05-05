@@ -24,6 +24,7 @@ export class PatientsResponsesController {
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
     type: ResponsePatientsResponseDto,
+    isArray: true,
   })
   @ApiInternalServerErrorResponse({
     description: 'Internal server error.',
@@ -33,10 +34,11 @@ export class PatientsResponsesController {
   })
   @ApiBody({
     type: CreatePatientsResponseDto,
-    description: 'The data to create a new patients response.',
+    description: 'The data to register patients responses.',
+    isArray: true,
   })
   @Post()
-  create(@Body() createPatientsResponseDto: CreatePatientsResponseDto) {
+  create(@Body() createPatientsResponseDto: CreatePatientsResponseDto[]) {
     return this.patientsResponsesService.create(createPatientsResponseDto);
   }
 }

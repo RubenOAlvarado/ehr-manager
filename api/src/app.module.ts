@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { PatientsModule } from './patients/patients.module';
 import { PatientsResponsesModule } from './patients-responses/patients-responses.module';
+import { LanguagesModule } from './languages/languages.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PatientsResponsesModule } from './patients-responses/patients-responses
     }),
     PatientsModule,
     PatientsResponsesModule,
+    LanguagesModule,
   ],
   controllers: [AppController],
 })
