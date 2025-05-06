@@ -36,6 +36,16 @@ export const createClients = (data: Client) => {
     }
 }
 
+export const fetchLanguages = async () => {
+    try {
+        const response = await api.get('/languages');
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching languages: ${error}`);
+        throw error;
+    }
+}
+
 export const fetchClients = () => {
     try {
         const response = api.get('/clients');

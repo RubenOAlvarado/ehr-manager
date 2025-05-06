@@ -1,0 +1,12 @@
+FROM node:20-alpine
+
+WORKDIR /usr/src/admin-site
+
+COPY ../admin-site/package*.json ./
+RUN npm install
+
+COPY ../admin-site .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
