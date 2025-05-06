@@ -31,7 +31,6 @@ A comprehensive fullstack system to manage Electronic Health Resources for patie
 - [EHR connections](#ehr-connections)
 - [Error recovery](#error-recovery)
 - [License](#-license)
-- [Improvements and Future Development](#improvements-and-future-development)
 
 
 ## 🔍 Overview
@@ -301,5 +300,3 @@ The API is designed to recover from errors, configuring retries and retry schedu
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Improvements and Future Development
