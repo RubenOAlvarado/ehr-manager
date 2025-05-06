@@ -7,14 +7,28 @@ export class EhrProvidersService {
   constructor(private prisma: PrismaService) {}
 
   create(createEhrProviderDto: CreateEhrProviderDto) {
-    return 'This action adds a new ehrProvider';
+    return this.prisma.ehrProvider.create({
+      data: {
+        ...createEhrProviderDto,
+        isActive: true,
+      },
+    });
   }
 
   findAll() {
-    return `This action returns all ehrProviders`;
+    return this.prisma.ehrProvider.findMany({
+      where: {
+        isActive: true,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ehrProvider`;
+  findOne(code: string) {
+    return this.prisma.ehrProvider.findUnique({
+      where: {
+        code,
+        isActive: true,
+      },
+    });
   }
 }

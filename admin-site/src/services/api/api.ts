@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { Client } from '../../types/Clients';
 import supabase from '../supabase/supabaseClients';
+import { EhrClientProvider } from '../../types/ClientEhrProvider';
+import { EhrProvider } from '../../types/EhrProviders';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 const API_VERSION = import.meta.env.VITE_API_VERSION || 'v1';
@@ -37,6 +39,46 @@ export const createClients = (data: Client) => {
 export const fetchClients = () => {
     try {
         const response = api.get('/clients');
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const createEhrProviders = (data: EhrProvider) => {
+    try {
+        const response = api.post('/ehr-providers', data);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchEhrProviders = () => {
+    try {
+        const response = api.get('/ehr-providers');
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchClientEhrAssignedProviders = (clientId: string) => {
+    try {
+        const response = api.get(`/clients/${clientId}/ehr-providers`);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const assingEhrProviderToClient = (clientId: string, providersList: EhrClientProvider[]) => {
+    try {
+        const response = api.post(`/clients/${clientId}/ehr-providers`, providersList);
         return response;
     } catch (error) {
         console.error(error);

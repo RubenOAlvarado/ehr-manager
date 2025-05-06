@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param } from '@nestjs/common';
 import { PatientsResponsesService } from './patients-responses.service';
 import { CreatePatientsResponseDto } from './dto/create-patients-response.dto';
 import {
@@ -10,9 +10,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponsePatientsResponseDto } from './dto/response-patients.dto';
+import { PatientIdParamDto } from 'src/shared/params/patient-id.param.dto';
 
 @ApiTags('Patients Responses')
-@Controller('patients-responses')
+@Controller('patients/:patientId/patients-responses')
 export class PatientsResponsesController {
   constructor(
     private readonly patientsResponsesService: PatientsResponsesService,
@@ -38,7 +39,13 @@ export class PatientsResponsesController {
     isArray: true,
   })
   @Post()
-  create(@Body() createPatientsResponseDto: CreatePatientsResponseDto[]) {
-    return this.patientsResponsesService.create(createPatientsResponseDto);
+  create(
+    @Param() param: PatientIdParamDto,
+    @Body() createPatientsResponseDto: CreatePatientsResponseDto[],
+  ) {
+    return this.patientsResponsesService.create(
+      param,
+      createPatientsResponseDto,
+    );
   }
 }

@@ -54,9 +54,9 @@ export const createPatient = async (patient: Patient) => {
   }
 }
 
-export const submitResponses = async (responses: PatientResponse[]) => {
+export const submitResponses = async (patientId:string, responses: PatientResponse[]) => {
   try {
-    const response = await api.post(`/patients-responses`, responses);
+    const response = await api.post(`patients/${patientId}/patients-responses`, responses);
     return response.data;
   } catch (error) {
     console.error(`Error submitting responses: ${error}`);

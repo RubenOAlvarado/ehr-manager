@@ -4,13 +4,27 @@ import { createPatient, submitResponses as apiSubmitResponses, fetchQuestions } 
 import { QuestionnaireContext } from "./QuestionnareContextImpl";
 
 export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [client, setClient] = useState<Client | null>(null);
+  const [client, setClientState] = useState<Client | null>(null);
   const [patient, setPatientState] = useState<Patient | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [responses, setResponses] = useState<Record<string, PatientResponse>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+
+  const resetQuestionnaireState = () => {
+    setPatientState(null);
+    setQuestions([]);
+    setCurrentQuestionIndex(0);
+    setResponses({});
+    setIsSubmitting(false);
+    setIsCompleted(false);
+  };
+
+  const setClient = (newClient: Client) => {
+    resetQuestionnaireState();
+    setClientState(newClient);
+  };
 
   const setPatient = async (patientData: Patient) => {
     try {
@@ -49,7 +63,7 @@ export const QuestionnaireProvider: React.FC<{ children: ReactNode }> = ({ child
 
     setIsSubmitting(true);
     try {
-      await apiSubmitResponses(Object.values(responses));
+      await apiSubmitResponses(patient.id!, Object.values(responses));
       setIsCompleted(true);
     } catch (error) {
       console.error('Error submitting responses:', error);

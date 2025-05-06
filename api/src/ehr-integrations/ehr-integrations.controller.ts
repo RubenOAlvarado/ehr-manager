@@ -1,5 +1,4 @@
-import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
-import { EhrIntegrationsService } from './ehr-integrations.service';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { CreateEhrIntegrationDto } from './dto/create-ehr-integration.dto';
 import {
   ApiBadRequestResponse,
@@ -7,24 +6,20 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { ResponseEhrIntegrationsDto } from './dto/response-ehr-integrations.dto';
-import { EhrProviderDto } from './dto/ehr-provider.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
+import { EhrMappingsService } from './ehr-mappings.service';
 
 @ApiBearerAuth()
 @ApiTags('EHR Integrations')
 @Controller('ehr-integrations')
 export class EhrIntegrationsController {
-  constructor(
-    private readonly ehrIntegrationsService: EhrIntegrationsService,
-  ) {}
+  constructor(private readonly ehrIntegrationsService: EhrMappingsService) {}
 
-  @ApiOperation({ summary: 'Create a new EHR integration' })
+  @ApiOperation({ summary: 'Create a new EHR mapper' })
   @ApiCreatedResponse({
     description: 'EHR integration created successfully',
     type: ResponseEhrIntegrationsDto,
@@ -43,23 +38,5 @@ export class EhrIntegrationsController {
   @Post()
   create(@Body() createEhrIntegrationDto: CreateEhrIntegrationDto) {
     return this.ehrIntegrationsService.create(createEhrIntegrationDto);
-  }
-
-  @ApiOperation({ summary: 'Get Mappings by EHR provider' })
-  @ApiOkResponse({
-    description: 'Mappings retrieved successfully',
-    type: ResponseEhrIntegrationsDto,
-    isArray: true,
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Internal server error',
-  })
-  @ApiNotFoundResponse({
-    description: 'Not mappings found for the given provider code',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Get('/mappings/:providerCode')
-  getMappingsByProvider(@Param('providerCode') providerCode: EhrProviderDto) {
-    return this.ehrIntegrationsService.getMappingsByProvider(providerCode);
   }
 }

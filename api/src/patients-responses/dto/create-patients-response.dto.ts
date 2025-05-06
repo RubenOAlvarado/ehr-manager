@@ -9,17 +9,6 @@ import {
 
 export class CreatePatientsResponseDto {
   @ApiProperty({
-    description: 'The ID of the patient',
-    example: '3-a456-426614174000',
-    type: String,
-    required: true,
-    format: 'uuid',
-  })
-  @IsNotEmpty({ message: 'Patient ID is required' })
-  @IsUUID()
-  patientId: string;
-
-  @ApiProperty({
     description: 'The ID of the base question',
     example: '3-a456-426614174000',
     type: String,

@@ -13,6 +13,8 @@ import { PatientsResponsesModule } from './patients-responses/patients-responses
 import { LanguagesModule } from './languages/languages.module';
 import { EhrProvidersModule } from './ehr-providers/ehr-providers.module';
 import { ClientEhrProviderModule } from './client-ehr-provider/client-ehr-provider.module';
+import { AuditLogModule } from './audit-log/audit-log.module';
+import { ApiClientModule } from './api-client/api-client.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ClientEhrProviderModule } from './client-ehr-provider/client-ehr-provid
     LanguagesModule,
     EhrProvidersModule,
     ClientEhrProviderModule,
+    AuditLogModule,
+    ApiClientModule,
   ],
   controllers: [AppController],
 })

@@ -1,37 +1,38 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-interface EhrProvider { code: string; name: string; }
+import { EhrProvider } from '../../types/EhrProviders';
+import { assingEhrProviderToClient, fetchClientEhrAssignedProviders, fetchEhrProviders } from '../../services/api/api';
+import { EhrClientProvider } from '../../types/ClientEhrProvider';
 
 export default function ClientEhrProvidersForm() {
   const { id: clientId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [providers, setProviders] = useState<EhrProvider[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<EhrClientProvider[]>([]);
   const [error, setError] = useState<string|null>(null);
 
   useEffect(() => {
     (async () => {
       const [{ data: all }, { data: assigned }] = await Promise.all([
-        // TODO: create this two api calls in services api
-        api.get<EhrProvider[]>('/ehr-providers'),
-        api.get<EhrProvider[]>(`/clients/${clientId}/ehr-providers`),
+        fetchEhrProviders(),
+        fetchClientEhrAssignedProviders(clientId!),
       ]);
       setProviders(all);
-      setSelected(assigned.map(p => p.code));
+      setSelected(assigned);
     })();
   }, [clientId]);
 
-  const toggle = (code: string) => {
-    setSelected(prev => prev.includes(code)
-      ? prev.filter(c => c !== code)
-      : [...prev, code]
+  const toggle = (provider: EhrProvider) => {
+    setSelected(selected.some(s => s.ehrProviderCode === provider.code)
+      ? selected.filter(s => s.ehrProviderCode !== provider.code)
+      : [...selected, { ehrProviderCode: provider.code, isDefault: false }]
     );
   };
 
   const handleSubmit = async () => {
     try {
-      await api.post(`/clients/${clientId}/ehr-providers`, { providers: selected });
+      await assingEhrProviderToClient(clientId!, selected);
       navigate('/clients');
     } catch (err: any) {
       setError(err.response?.data?.message || err.message);
@@ -40,25 +41,41 @@ export default function ClientEhrProvidersForm() {
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-2xl shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Asignar Proveedores EHR</h2>
+      <h2 className="text-2xl font-bold mb-4">Assign EHR Providers</h2>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       <div className="space-y-2 max-h-64 overflow-y-auto">
         {providers.map(p => (
-          <label key={p.code} className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={selected.includes(p.code)}
-              onChange={() => toggle(p.code)}
-            />
-            <span>{p.name}</span>
-          </label>
+          <div key={p.code} className="flex items-center space-x-4">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selected.some(provider => provider.ehrProviderCode === p.code)}
+                onChange={() => toggle(p)}
+              />
+              <span>{p.name}</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                name="defaultProvider"
+                checked={selected.some(provider => provider.ehrProviderCode === p.code && provider.isDefault)}
+                onChange={() => {
+                  setSelected(selected.map(s => ({
+                    ...s
+                  })));
+                }}
+                disabled={!selected.some(provider => provider.ehrProviderCode === p.code)}
+              />
+              <span className="text-sm text-gray-600">Default</span>
+            </label>
+          </div>
         ))}
       </div>
       <button
         onClick={handleSubmit}
         className="mt-4 w-full py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700"
       >
-        Guardar Asignaciones
+        Save Assignments
       </button>
     </div>
   );

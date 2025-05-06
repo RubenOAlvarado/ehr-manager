@@ -28,9 +28,12 @@ export class PatientsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, withClient: boolean = false) {
     return this.prisma.patient.findUnique({
       where: { id },
+      include: {
+        client: withClient,
+      },
     });
   }
 }

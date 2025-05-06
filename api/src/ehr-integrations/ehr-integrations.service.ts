@@ -1,41 +1,67 @@
 import {
-  BadRequestException,
   Injectable,
-  NotFoundException,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
-import { CreateEhrIntegrationDto } from './dto/create-ehr-integration.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { BaseQuestionsService } from 'src/base-questions/base-questions.service';
-import { EhrProviderDto } from './dto/ehr-provider.dto';
+import { Patient, PatientResponse } from '@prisma/client';
+import { ClientEhrProviderService } from 'src/client-ehr-provider/client-ehr-provider.service';
+import { EhrSyncLogsService } from './ehr-sync-log.service';
 
 @Injectable()
 export class EhrIntegrationsService {
   constructor(
-    private prisma: PrismaService,
-    private baseQuestionService: BaseQuestionsService,
+    private clientEhrProvidersService: ClientEhrProviderService,
+    private syncService: EhrSyncLogsService,
   ) {}
+  private readonly logger = new Logger(EhrIntegrationsService.name);
 
-  async create(createEhrIntegrationDto: CreateEhrIntegrationDto) {
-    const validBaseQuestionId = await this.baseQuestionService.findOne(
-      createEhrIntegrationDto.baseQuestionId,
-    );
-    if (!validBaseQuestionId)
-      throw new BadRequestException('Invalid base question ID');
-    return this.prisma.ehrMapping.create({
-      data: {
-        ...createEhrIntegrationDto,
-        isActive: true,
-      },
-    });
-  }
+  async syncPatientResponses(
+    patient: Patient,
+    patientResponses: PatientResponse[],
+  ) {
+    this.logger.log(`Syncing patient responses for patient ${patient.id}`);
+    try {
+      const clientProviders = await this.clientEhrProvidersService.findAll({
+        clientId: patient.clientId,
+      });
+      if (clientProviders.length === 0) {
+        this.logger.error(
+          `No client providers found for client ${patient.clientId}`,
+        );
+        throw new InternalServerErrorException(
+          `No client providers found for client ${patient.clientId}`,
+        );
+      }
 
-  async getMappingsByProvider({ providerCode }: EhrProviderDto) {
-    const mappings = await this.prisma.ehrMapping.findMany({
-      where: { ehrProviderCode: providerCode, isActive: true },
-      include: { baseQuestion: true },
-    });
-
-    if (!mappings.length) throw new NotFoundException('No mappings found');
-    return mappings;
+      this.logger.log(
+        `Found ${clientProviders.length} client providers for client ${patient.clientId}`,
+      );
+      for (const clientProvider of clientProviders) {
+        this.logger.log(
+          `Syncing patient responses for patient ${patient.id} with client provider ${clientProvider.id}`,
+        );
+        const { ehrProvider } = clientProvider;
+        const syncResult = await this.syncService.syncWithProvider(
+          patient,
+          patientResponses,
+          clientProvider,
+          ehrProvider,
+        );
+        this.logger.log(
+          `Sync result for patient ${patient.id} with client provider ${clientProvider.id}: ${JSON.stringify(
+            syncResult,
+          )}`,
+        );
+      }
+      this.logger.log(
+        `Successfully synced patient responses for patient ${patient.id} with client providers`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error syncing patient responses for patient ${patient.id}`,
+        error instanceof Error ? error.stack : String(error),
+      );
+      throw error;
+    }
   }
 }
