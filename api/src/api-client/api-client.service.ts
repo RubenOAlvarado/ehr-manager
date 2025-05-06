@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { JsonValue } from '@prisma/client/runtime/library';
-// not installed, prepare for future implementation
+// not installed, prepared for future implementation
 //import axios from axios;
 
 @Injectable()
@@ -12,6 +11,7 @@ export class ApiClientService {
     credentials: Record<string, string>,
     // baseUrl: string,
   ) {
+    // Prepare headers for the API request
     const headers = {
       'Content-Type': 'application/json',
       ...this.buildAuthHeaders(authConfig, credentials),
