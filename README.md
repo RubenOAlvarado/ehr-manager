@@ -195,31 +195,11 @@ cd ehr-manager
    - Create .env file in the project root directory for docker-compose based on the .env.example file.
    - Or if you want to run the project locally, create a .env file in the project root directory for the API, admin or patient portal.
 
-### Development Environment
-The project includes Docker configurations for easy development setup:
-
-1. Start the development environment:
-```bash
-docker-compose up --build
-```
-This will start:
-
-- API server on port 4000
-- Admin site on port 3000
-- Patients site on port 3001
-
-### Production Deployment
-For production deployment:
-
-1. Build the Docker images:
-```bash
-docker-compose -f docker-compose.yml up --build
-```
-
-This will build optimized containers and deploy:
-
-- API server (Node.js)
-- Admin and Patient sites (served via Nginx)
+## Production Deployment
+The projects are deployed in a cloud server, so you don't need to run the project locally. You can check the deployment in the following links:
+- Admin Site: https://admin-site-phi.vercel.app/
+- Patients Site: https://patients-site.vercel.app/
+- API:  https://ehr-manager-api.onrender.com/api-docs
 
 ## 📁 Project Structure
 ehr-manager/
@@ -227,8 +207,6 @@ ehr-manager/
 ├── admin-site/           # React admin portal
 ├── patients-site/        # React patient portal
 ├── docker/               # Docker configuration
-│   ├── dev/              # Development Docker files
-│   └── prod/             # Production Docker files
 ├── LICENSE               # MIT License
 └── README.md             # This file
 
@@ -296,7 +274,10 @@ The API is designed in a modular way, so it can be split in microservices in the
 Right now the API just simulates a connection to an EHR. In the future, it can be connected to a real EHR, there is a client implemented as a service, but it's not fully implemented.
 
 ## Error recovery
-The API is designed to recover from errors, configuring retries and retry schedules. Teh database records the status of the sync, so it can be recovered from errors and the error is logged in the database.
+The API is designed to recover from errors, configuring retries and retry schedules. The database records the status of the sync, so it can be recovered from errors and the error is logged in the database.
+
+## Deployment
+I prepared a docker-compose file to deploy the application in a containerized environment. I coudn't complete the whole configuration, but I hope it'll be useful for you as a starting point to growth the project.
 
 ## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
