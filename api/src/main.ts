@@ -8,7 +8,15 @@ import { useContainer } from 'class-validator';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:3001',
+      'http://caddy',
+      'http://localhost',
+      'http://127.0.0.1',
+      'https://patients-site.vercel.app',
+      'https://admin-site-phi.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

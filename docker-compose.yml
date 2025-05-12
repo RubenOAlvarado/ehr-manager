@@ -2,8 +2,8 @@ services:
   api:
     container_name: api
     build:
-      context: ./api
-      dockerfile: ./docker/prod/api.dockerfile
+      context: .
+      dockerfile: ./docker/api.dockerfile
     ports:
       - "4000:4000"
     environment:
@@ -13,48 +13,20 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     networks:
       - app-network
-
-  admin-site:
-    container_name: admin-site
-    build:
-      context: ./admin-site
-      dockerfile: ./docker/prod/admin-site.dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-      VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-      VITE_API_URL: ${VITE_API_URL}
-      VITE_API_VERSION: ${VITE_API_VERSION}
-    networks:
-      - app-network
-
-  patients-site:
-    container_name: patients-site
-    build:
-      context: ./patients-site
-      dockerfile: ./docker/prod/patients-site.dockerfile
-    ports:
-      - "3001:3000"
-    environment:
-      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-      VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
-      VITE_API_URL: ${VITE_API_URL}
-      VITE_API_VERSION: ${VITE_API_VERSION}
-    networks:
-      - app-network
-
-  nginx:
-    container_name: nginx
+  caddy:
+    container_name: caddy
     build:
       context: .
-      dockerfile: ./docker/nginx/Dockerfile
+      dockerfile: ./docker/caddy/Dockerfile
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_API_VERSION=${VITE_API_VERSION}
     ports:
       - "80:80"
     depends_on:
       - api
-      - admin-site
-      - patients-site
     networks:
       - app-network
 

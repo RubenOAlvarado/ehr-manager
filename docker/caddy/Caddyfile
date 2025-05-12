@@ -1,0 +1,27 @@
+{
+  auto_https off
+}
+
+:80 {
+  root * /usr/share/caddy
+
+  # Admin SPA
+  handle_path /admin/* {
+    try_files {path} /admin/index.html
+    file_server
+  }
+
+  # Patients SPA
+  handle_path /patients/* {
+    try_files {path} /patients/index.html
+    file_server
+  }
+
+  # API backend
+    handle_path /api/v1/* {
+        reverse_proxy api:4000
+    }
+
+  # Redirect root to admin
+  redir / /admin/ 301
+}

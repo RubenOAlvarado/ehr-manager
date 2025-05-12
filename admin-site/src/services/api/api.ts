@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { Client } from '../../types/Clients';
 import supabase from '../supabase/supabaseClients';
-import { EhrClientProvider } from '../../types/ClientEhrProvider';
 import { EhrProvider } from '../../types/EhrProviders';
+import { BaseQuestionFormData } from '../../schemas/base-question.schema';
+import { QuestionSetFormData } from '../../schemas/question-set.schema';
+import { ClientFormData } from '../../schemas/client.schema';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-const API_VERSION = import.meta.env.VITE_API_VERSION || 'v1';
+const BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_FOR_DOCKER;
+const API_VERSION = import.meta.env.VITE_API_VERSION;
 
 const api = axios.create({
     baseURL: `${BASE_URL}/${API_VERSION}`,
@@ -26,9 +27,19 @@ api.interceptors.request.use(
     }
 );
 
-export const createClients = (data: Client) => {
+export const createClients = async (data: ClientFormData) => {
     try {
-        const response = api.post('/clients', data);
+        const response = await api.post('/clients', data);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const updateClients = async (data: ClientFormData, clientId?: string) => {
+    try {
+        const response = await api.put(`/clients/${clientId}`, data);
         return response;
     } catch (error) {
         console.error(error);
@@ -46,9 +57,19 @@ export const fetchLanguages = async () => {
     }
 }
 
-export const fetchClients = () => {
+export const fetchClients = async () => {
     try {
-        const response = api.get('/clients');
+        const response = await api.get('/clients');
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const createEhrProviders = async (data: EhrProvider) => {
+    try {
+        const response = await api.post('/ehr-providers', data);
         return response;
     } catch (error) {
         console.error(error);
@@ -56,9 +77,19 @@ export const fetchClients = () => {
     }
 }
 
-export const createEhrProviders = (data: EhrProvider) => {
+export const fetchEhrProviders = async () => {
     try {
-        const response = api.post('/ehr-providers', data);
+        const response = await api.get('/ehr-providers');
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const createEhrProvider = async (data: EhrProvider) => {
+    try {
+        const response = await api.post('/ehr-providers', data);
         return response;
     } catch (error) {
         console.error(error);
@@ -66,9 +97,9 @@ export const createEhrProviders = (data: EhrProvider) => {
     }
 }
 
-export const fetchEhrProviders = () => {
+export const updateEhrProvider = async (data: EhrProvider, ehrProviderCode?: string) => {
     try {
-        const response = api.get('/ehr-providers');
+        const response = await api.put(`/ehr-providers/${ehrProviderCode}`, data);
         return response;
     } catch (error) {
         console.error(error);
@@ -76,9 +107,19 @@ export const fetchEhrProviders = () => {
     }
 }
 
-export const fetchClientEhrAssignedProviders = (clientId: string) => {
+export const fetchBaseQuestions = async () => {
     try {
-        const response = api.get(`/clients/${clientId}/ehr-providers`);
+        const response = await api.get('/base-questions');
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const createBaseQuestion = async (data: BaseQuestionFormData) => {
+    try {
+        const response = await api.post('/base-questions', data);
         return response;
     } catch (error) {
         console.error(error);
@@ -86,11 +127,41 @@ export const fetchClientEhrAssignedProviders = (clientId: string) => {
     }
 }
 
-export const assingEhrProviderToClient = (clientId: string, providersList: EhrClientProvider[]) => {
+export const updateBaseQuestion = async (data: BaseQuestionFormData, baseQuestionCode?: string) => {
     try {
-        const response = api.post(`/clients/${clientId}/ehr-providers`, providersList);
+        const response = await api.put(`/base-questions/${baseQuestionCode}`, data);
         return response;
     } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const fetchQuestionSets = async (clientId: string) => {
+    try {
+        const response = await api.get(`clients/${clientId}/question-sets`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const createQuestionSet = async (clientId: string, data: QuestionSetFormData) => {
+    try{
+        const response = await api.post(`clients/${clientId}/question-sets`, data);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const updateQuestionSet = async (clientId: string, data: QuestionSetFormData, questionSetCode?: string) => {
+    try {
+        const response = await api.put(`clients/${clientId}/question-sets/${questionSetCode}`, data);
+        return response;
+    }catch (error) {
         console.error(error);
         throw error;
     }

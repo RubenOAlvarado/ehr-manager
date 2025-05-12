@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Client, Patient, PatientResponse } from "../types";
 
-const BASE_URL = "http://localhost:4000/api";
-const API_VERSION = "v1";
+const BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL_FOR_DOCKER;
+const API_VERSION = import.meta.env.VITE_API_VERSION;
 
 export default axios.create({
   baseURL: `${BASE_URL}/${API_VERSION}`,
